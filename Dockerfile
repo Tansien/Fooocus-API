@@ -17,11 +17,6 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir opencv-python-headless -i https://pypi.org/simple
 
-# Install Fooocus itself if cloned in build context
-WORKDIR /app/repositories/Fooocus
-RUN pip install --no-cache-dir -e .
-
-WORKDIR /app
 EXPOSE 8888
 
 CMD ["python", "main.py", "--host", "0.0.0.0", "--port", "8888", "--skip-pip"]
