@@ -1,15 +1,27 @@
-FROM pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
+FROM pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime AS build
 
-ENV TZ=Europe/Stockholm
+ENV TZ=Europe/Stockholm \
+    DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
+# Install git only at build time; strip cache
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy Fooocus and API project
 COPY . /app
 
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies without pip cache
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir opencv-python-headless -i https://pypi.org/simple
 
-RUN pip install --no-cache-dir opencv-python-headless -i https://pypi.org/simple
+# Install Fooocus itself if cloned in build context
+WORKDIR /app/repositories/Fooocus
+RUN pip install --no-cache-dir -e .
 
+WORKDIR /app
 EXPOSE 8888
 
 CMD ["python", "main.py", "--host", "0.0.0.0", "--port", "8888", "--skip-pip"]
