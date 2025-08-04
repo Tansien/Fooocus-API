@@ -17,6 +17,9 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir opencv-python-headless -i https://pypi.org/simple
 
+# Make sure Fooocus-API can create/delete folders
+RUN chmod -R 777 /app/
+
 EXPOSE 8888
 
 CMD ["python", "main.py", "--host", "0.0.0.0", "--port", "8888", "--skip-pip"]
