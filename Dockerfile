@@ -5,6 +5,15 @@ ENV TZ=Europe/Stockholm \
 
 WORKDIR /app
 
+# Set writable cache/config directories
+ENV TRANSFORMERS_CACHE=/app/cache/huggingface
+ENV HF_HOME=/app/cache/huggingface
+ENV XDG_CACHE_HOME=/app/cache
+ENV MPLCONFIGDIR=/app/config/matplotlib
+
+# Ensure directories exist
+RUN mkdir -p /app/cache/huggingface /app/config/matplotlib && chmod -R 777 /app/cache /app/config
+
 # Install git only at build time; strip cache
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git && \
